@@ -1,0 +1,64 @@
+{{template "base" .}}
+
+{{define "content" }}
+    <div class="container py-5">
+        <div class="row">
+            <div class="col">
+                <h1 class="mb-3">Test microservices</h1>
+                <hr class="mb-4">
+
+                <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Broker</a>
+
+                <div id="output" class="mt-4 p-4" style="outline: 1px solid silver;">
+                    <span class="text-muted">Output shows here...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col">
+                <h4 class="mb-3">Sent</h4>
+                <div class="p-4" style="outline: 1px solid silver;">
+                    <pre id="payload" class="mb-0"><span class="text-muted">Nothing sent yet...</span></pre>
+                </div>
+            </div>
+            <div class="col">
+                <h4 class="mb-3">Received</h4>
+                <div class="p-4" style="outline: 1px solid silver;">
+                    <pre id="received" class="mb-0"><span class="text-muted">Nothing received yet...</span></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script>
+    let brokerBtn = document.getElementById("brokerBtn");
+    let output = document.getElementById("output");
+    let sent = document.getElementById("payload");
+    let received = document.getElementById("received");
+
+    brokerBtn.addEventListener("click", function() {
+
+        const body = {
+            method: 'POST'
+        }
+
+        fetch("http:\/\/localhost:8080", body)
+        .then(response => response.json())
+        .then(data => {
+            sent.innerHTML = "empty post request";
+            received.innerHTML = JSON.stringify(data, undefined, 4);
+            if (data.error){
+                console.log(data.message);
+            } else {
+                output.innerHTML += `<br><strong>Response from broker service:</strong>: ${data.message}`;
+            }
+        })
+        .catch(error => {
+            output.innerHTML += "<br><br><strong>Error: </strong>:" + error;
+        })
+    });
+    </script>
+{{end}}
